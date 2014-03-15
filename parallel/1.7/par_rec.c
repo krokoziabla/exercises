@@ -20,7 +20,8 @@ struct quad_args
 static
 double quad(double left, double right, double fleft, double fright, double lrarea);
 
-static void * worker(void * arg)
+static
+void * worker(void * arg)
 {
     struct quad_args        * quad_args = (struct quad_args *)arg;
 
@@ -39,70 +40,29 @@ double quad(double left, double right, double fleft, double fright, double lrare
 
     if ( fabs((larea + rarea) - lrarea) > epsilon )
     {
-        if ( sem_trywait(&launched_threads) != 0 )
+        if ( sem_trywait(&launched_threads) == -1 )
         {
             larea = quad(left, mid, fleft, fmid, larea);
             rarea = quad(mid, right, fmid, fright, rarea);
         }
         else
         {
-            struct quad_args    quad_args = { .left = left, .right = mid, .fleft = fleft, .fright = fmid, .lrarea = larea };
+            struct quad_args    left_quad_args = { .left = left, .right = mid, .fleft = fleft, .fright = fmid, .lrarea = larea },
+                                right_quad_args = { .left = mid, .right = right, .fleft = fmid, .fright = fright, .lrarea = rarea };
 
-            pthread_t           left_worker;
+            pthread_t           left_worker,
+                                right_worker;
 
-            if ( pthread_create(&left_worker, NULL, worker, &quad_args) == 0 )
-            {
-                if ( sem_trywait(&launched_threads) != 0 )
-                {
-                    rarea = quad(mid, right, fmid, fright, rarea);
-                }
-                else
-                {
-                    struct quad_args    quad_args = { .left = mid, .right = right, .fleft = fmid, .fright = fright, .lrarea = rarea };
+            pthread_create(&left_worker, NULL, worker, &left_quad_args);
+            pthread_create(&right_worker, NULL, worker, &right_quad_args);
 
-                    pthread_t           right_worker;
+            pthread_join(left_worker, NULL);
+            pthread_join(right_worker, NULL);
 
-                    if ( pthread_create(&right_worker, NULL, worker, &quad_args) != 0 )
-                    {
-                        rarea = quad(mid, right, fmid, fright, rarea);
-                    }
-                    else
-                    {
-                        struct quad_args    * quad_args = NULL;
+            larea = left_quad_args.lrarea;
+            rarea = right_quad_args.lrarea;
 
-                        if ( pthread_join(right_worker, (void **)&quad_args) != 0 )
-                        {
-                            printf("Failed to join thread\n");
-                            exit(EXIT_FAILURE);
-                        }
-                        else
-                        {
-                            rarea = quad_args->lrarea;
-
-                            sem_post(&launched_threads);
-                        }
-                    }
-                }
-
-                struct quad_args    * quad_args = NULL;
-
-                if ( pthread_join(left_worker, (void **)&quad_args) != 0 )
-                {
-                    printf("Failed to join thread\n");
-                    exit(EXIT_FAILURE);
-                }
-                else
-                {
-                    larea = quad_args->lrarea;
-
-                    sem_post(&launched_threads);
-                }
-            }
-            else
-            {
-                larea = quad(left, mid, fleft, fmid, larea);
-                rarea = quad(mid, right, fmid, fright, rarea);
-            }
+            sem_post(&launched_threads);
         }
     }
 
@@ -113,9 +73,11 @@ int main(int argc, char * argv[])
 {
     double      x0, x1;
 
-    if ( argc != 4 )
+    unsigned    thread_pairs;
+
+    if ( argc != 5 )
     {
-        printf("Usage: par_rec x0 x1 epsilon\n");
+        printf("Usage: par_rec x0 x1 thread_num epsilon\n");
         return EXIT_FAILURE;
     }
 
@@ -131,17 +93,24 @@ int main(int argc, char * argv[])
         return EXIT_FAILURE;
     }
 
-    if ( sscanf(argv[3], "%la", &epsilon) != 1 )
+    if ( sscanf(argv[3], "%u", &thread_pairs) != 1 )
     {
-        printf("Bad n\n");
+        printf("Bad number of thread pairs\n");
         return EXIT_FAILURE;
     }
 
-    if ( sem_init(&launched_threads, 0, 4u) != 0 )
+    if ( sscanf(argv[4], "%la", &epsilon) != 1 )
+    {
+        printf("Bad prescsion\n");
+        return EXIT_FAILURE;
+    }
+
+    if ( sem_init(&launched_threads, 0, thread_pairs) != 0 )
     {
         printf("Failed to init a semaphore\n");
         return EXIT_FAILURE;
     }
+
 
 
     double      fleft = sin(x0) * exp(x0),
