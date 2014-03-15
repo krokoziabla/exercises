@@ -2,7 +2,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static double epsilon;
+#include <pthread.h>
+#include <semaphore.h>
+
+static double   epsilon;
+static sem_t    launched_threads;
+
+struct quad_args
+{
+    double left;
+    double right;
+    double fleft;
+    double fright;
+    double lrarea;
+};
+
+static
+double quad(double left, double right, double fleft, double fright, double lrarea);
+
+static void * worker(void * arg)
+{
+    struct quad_args        * quad_args = (struct quad_args *)arg;
+
+    quad_args->lrarea = quad(quad_args->left, quad_args->right, quad_args->fleft, quad_args->fright, quad_args->lrarea);
+
+    return quad_args;
+}
 
 static
 double quad(double left, double right, double fleft, double fright, double lrarea)
@@ -14,8 +39,71 @@ double quad(double left, double right, double fleft, double fright, double lrare
 
     if ( fabs((larea + rarea) - lrarea) > epsilon )
     {
-        larea = quad(left, mid, fleft, fmid, larea);
-        rarea = quad(mid, right, fmid, fright, rarea);
+        if ( sem_trywait(&launched_threads) != 0 )
+        {
+            larea = quad(left, mid, fleft, fmid, larea);
+            rarea = quad(mid, right, fmid, fright, rarea);
+        }
+        else
+        {
+            struct quad_args    quad_args = { .left = left, .right = mid, .fleft = fleft, .fright = fmid, .lrarea = larea };
+
+            pthread_t           left_worker;
+
+            if ( pthread_create(&left_worker, NULL, worker, &quad_args) == 0 )
+            {
+                if ( sem_trywait(&launched_threads) != 0 )
+                {
+                    rarea = quad(mid, right, fmid, fright, rarea);
+                }
+                else
+                {
+                    struct quad_args    quad_args = { .left = mid, .right = right, .fleft = fmid, .fright = fright, .lrarea = rarea };
+
+                    pthread_t           right_worker;
+
+                    if ( pthread_create(&right_worker, NULL, worker, &quad_args) != 0 )
+                    {
+                        rarea = quad(mid, right, fmid, fright, rarea);
+                    }
+                    else
+                    {
+                        struct quad_args    * quad_args = NULL;
+
+                        if ( pthread_join(right_worker, (void **)&quad_args) != 0 )
+                        {
+                            printf("Failed to join thread\n");
+                            exit(EXIT_FAILURE);
+                        }
+                        else
+                        {
+                            rarea = quad_args->lrarea;
+
+                            sem_post(&launched_threads);
+                        }
+                    }
+                }
+
+                struct quad_args    * quad_args = NULL;
+
+                if ( pthread_join(left_worker, (void **)&quad_args) != 0 )
+                {
+                    printf("Failed to join thread\n");
+                    exit(EXIT_FAILURE);
+                }
+                else
+                {
+                    larea = quad_args->lrarea;
+
+                    sem_post(&launched_threads);
+                }
+            }
+            else
+            {
+                larea = quad(left, mid, fleft, fmid, larea);
+                rarea = quad(mid, right, fmid, fright, rarea);
+            }
+        }
     }
 
     return larea + rarea;
@@ -27,7 +115,7 @@ int main(int argc, char * argv[])
 
     if ( argc != 4 )
     {
-        printf("Usage: seq_iter x0 x1 epsilon\n");
+        printf("Usage: par_rec x0 x1 epsilon\n");
         return EXIT_FAILURE;
     }
 
@@ -48,6 +136,13 @@ int main(int argc, char * argv[])
         printf("Bad n\n");
         return EXIT_FAILURE;
     }
+
+    if ( sem_init(&launched_threads, 0, 4u) != 0 )
+    {
+        printf("Failed to init a semaphore\n");
+        return EXIT_FAILURE;
+    }
+
 
     double      fleft = sin(x0) * exp(x0),
                 fright = sin(x1) * exp(x1),
