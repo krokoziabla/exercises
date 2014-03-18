@@ -53,7 +53,7 @@ int main(int argc, char * argv[])
         {
             out_row[p][i] = 0.0;
 
-            for ( size_t j = 0u;   j < n;   ++j )
+            for ( size_t j = 0u;   j < n * P;   ++j )
             {
                 out_row[p][i] += in_row[p][j] * matrix[j][i];
             }
