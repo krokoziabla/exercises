@@ -82,17 +82,17 @@ int main(int argc, char * argv[])
             }
         }
 
-        for ( size_t p = 0u;   p < P;   ++p )
-        {
-            ssize_t     bytes_handled = write(out_fd, column[p], n * P * sizeof(double));
-            assert( bytes_handled == n * P * sizeof(double) );
-        }
-
         index = (index + P) % (n * P);
 
         if ( index == save_index )
         {
             break;
+        }
+
+        for ( size_t p = 0u;   p < P;   ++p )
+        {
+            ssize_t     bytes_handled = write(out_fd, column[p], n * P * sizeof(double));
+            assert( bytes_handled == n * P * sizeof(double) );
         }
 
         for ( size_t p = 0u;   p < P;   ++p )
