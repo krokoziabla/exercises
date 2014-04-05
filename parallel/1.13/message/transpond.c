@@ -59,7 +59,7 @@ int main(int argc, char * argv[])
     pid_t           * pid = calloc(P + 1u, sizeof(pid_t));
     assert( pid != NULL );
 
-    int             * pfd = calloc(P + 1u << 2, sizeof(int));
+    int             * pfd = calloc((P + 1u) << 2, sizeof(int));
     assert( pid != NULL );
 
 #define R_WORKER        0
@@ -83,7 +83,7 @@ int main(int argc, char * argv[])
             ret = pipe(pfd + (current_worker << 2u) + R_CONTROLLER);
             assert( ret != -1 );
 
-            ret = close(pfd[current_worker - np + W_WORKER]);
+            ret = close(pfd[((current_worker - 1u) << 2u) + W_WORKER]);
             // assert( ret != -1 || errno == EINVAL );
 
             pid[current_worker] = fork();
@@ -156,8 +156,6 @@ int main(int argc, char * argv[])
             assert( bytes_handled == sizeof matrix[j][i] );
         }
     }
-    ret = close(pid[P]);
-    assert( ret != -1 );
 
     putchar('\n');
 
