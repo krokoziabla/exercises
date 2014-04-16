@@ -1,0 +1,45 @@
+string buffer;          # contains one line of input
+bool done = false;      # used to signal termination
+
+co                      # process 1: find patterns
+    string line1;
+    while ( true )
+    {
+        < await( ! buffer.empty() || done ); >
+
+        if ( done )
+        {
+            break;
+        }
+
+        line1 = buffer;
+
+        < buffer.clear(); >
+
+        look for pattern in line1;
+
+        if ( pattern is in line1 )
+        {
+            print line1;
+        }
+    }
+
+//                      # process 2: read new lines
+
+    string line2;
+
+    while ( true )
+    {
+        read next line of input into line2;
+
+        if ( EOF )
+        {
+            done = true;
+            break;
+        }
+
+        < await( buffer.empty() ); >
+
+        < buffer = line2; >
+    }
+oc;
