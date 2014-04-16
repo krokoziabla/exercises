@@ -1,0 +1,32 @@
+int buf;
+
+bool full = false,
+     empty = true;
+
+process Producer
+{
+    int a[n],
+        p;
+
+    while ( p < n )
+    {
+        < awiat( empty ); >
+        buf = a[p];
+        p += 1;
+        < empty = false; full = true; >
+    }
+}
+
+process Consumer
+{
+    int b[n],
+        c;
+
+    while ( c < n )
+    {
+        < await( full ); >
+        b[c] = buf;
+        c += 1;
+        < full = false; empty = true; >
+    }
+}

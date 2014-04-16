@@ -1,0 +1,25 @@
+int buf, p = 0, c = 0;
+
+process Producer
+{
+    int a[n];
+
+    while ( p < n )
+    {
+        < await( p == c ); >
+        buf = a[p];
+        p += 1;
+    }
+}
+
+process Consumer
+{
+    int b[n];
+
+    while ( c < n )
+    {
+        < await( p > c ); >
+        b[c] = buf;
+        c += 1;
+    }
+}
