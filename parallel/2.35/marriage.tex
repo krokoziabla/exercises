@@ -1,0 +1,103 @@
+\documentclass{article}
+
+\usepackage[T1,T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath}
+
+\author{Виталий Кирсанов}
+
+\begin{document}
+
+\section{Решение}
+
+Пусть 
+\begin{displaymath}
+O_q[1:\omega], 1 \leq \omega \leq n 
+\end{displaymath}
+- все предложения, сделанные женщине \( q \). Каждое предложение представляет собой номер мужчины от \( 1 \) до \( n \). Далее, пусть
+\begin{displaymath}
+A_p[1:\alpha], 1 \leq \alpha \leq n 
+\end{displaymath}
+- все ответы, данные мужчине \( p \) женщинами, которым он сделал предложения. Ответ может принимать два значения: \emph{maybe} и \emph{no}.
+Пусть
+\begin{displaymath}
+M_p, 1 \leq p \leq n
+\end{displaymath}
+- массив предпочтений мужчины \( p \), или его рейтинг женщин. Чем ближе к началу массива находится женщина, тем выше мужчина \( p \) ценит её. Одна
+и та же женщина появляется в рейтинге только один раз:
+\begin{displaymath}
+\forall p,s,t, 1 \leq p \leq n, 1 \leq s < t \leq n : M_p[s] \neq M_p[t]
+\end{displaymath}
+Из этого следует, что существует однозначная обратная функция \( M_p^{-1} : women \to ratings \). Поэтому свойство упорядоченности массива \( M_p \) по
+убыванию рейтинга может быть записано так:
+\begin{displaymath}
+\forall p,s,t, 1 \leq p \leq n, 1 \leq s < t \leq n : M_p^{-1}[M_p[s]] < M_p^{-1}[M_p[t]]
+\end{displaymath}
+И наконец, пусть
+\begin{displaymath}
+W_q, 1 \leq q \leq n
+\end{displaymath}
+- массив оценок женщиной \( q \) мужчин. Женщина \( q \) не оценивает никаких двух мужчин одинаково:
+\begin{displaymath}
+\forall q,s,t, 1 \leq q \leq n, 1 \leq s < t \leq n : W_q[s] \neq W_q[t]
+\end{displaymath}
+
+Мужчина последовательно делает предложения женщинам в порядке убывания рейтинга до тех пор, пока не получит ответ \emph{maybe} и этот ответ не
+будет окончательным, то есть:
+\begin{displaymath}
+\forall i, 1 \leq i < \alpha : A_p[i] = no \cap A_p[\alpha] = maybe
+\end{displaymath}
+
+Женщина \( q \) всегда выбирает лучшее предложение, поступившее ей:
+\begin{displaymath}
+\forall i, 1 \leq i \leq \omega : W_q[e[q]] \geq W_q[O_q[i]] \cap \exists ! k : W_q[e[q]] = W[O_q[k]]
+\end{displaymath}
+Единственность совпадения оценок \( e[q] \) и \( O_q[k] \) следует из того, что ни один мужчина не делает предложение одной и той же женщине
+дважды.
+
+Так как всякая женщина в конечном итоге выбирает единственного мужчину, а каждый мужчина никогда не делает предложение двум женщинам одновременно,
+всякий мужчина рано или поздно получит окончательный ответ \emph{maybe}. Следовательно процесс нахождения пары в конечном итоге завершится для каждого
+мужчины и каждой женщины. Для каждой пары \( (e[i],i), 1 \leq i \leq n \) будет верно следующее:
+\begin{equation}
+    \label{pr:final1}
+    \begin{array}{c}
+    \forall j, 1 \leq j < \alpha_{e[i]} : A_{e[i]}[j] = no \\
+    \cap \\
+    A_{e[i]}[\alpha_{e[i]}] = maybe \\
+    \cap \\
+    \forall j, 1 \leq j \leq \omega_i : W_i[e[i]] \geq W_i[O_i[j]] \\
+    \cap \\
+    \exists ! k : W_i[e[i]] = W_i[O_i[k]]
+    \end{array}
+\end{equation}
+Мужчины, получившие отказ, удовлетворяют следующему выражению:
+\begin{displaymath}
+\begin{array}{c}
+\forall p, 1 \leq p \leq n : A_p[i] = no \\
+\Leftrightarrow \\
+\exists k, 1 \leq k \leq \omega_{M_p[i]}, p \neq O_{M_p[i]}[k] : W_{M_p[i]}[p] < W_{M_p[i]}[O_{M_p[i]}[k]]
+\end{array}
+\end{displaymath}
+А мужчины, получившие ответ \emph{maybe}, удовлетворяют этому выражению:
+\begin{displaymath}
+\begin{array}{c}
+\forall p, 1 \leq p \leq n : A_p[i] = maybe \\
+\Leftrightarrow \\
+\exists ! k, W_{M_p[i]}[p] = W_{M_p[i]}[O_{M_p[i]}[k]] \cap p = O_{M_p[i]}[k]
+\end{array}
+\end{displaymath}
+Тогда \ref{pr:final1} можно записать следующим образом:
+\begin{equaton}
+    
+\end{equaton}
+
+{
+    \ttfamily
+    hello
+    \( \forall j \)
+    worldsadfs
+    \emph{blabla}
+    \textsc{hiall}
+}
+\end{document}
