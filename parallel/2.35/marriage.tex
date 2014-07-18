@@ -88,16 +88,229 @@ W_q, 1 \leq q \leq n
 \end{array}
 \end{displaymath}
 Тогда \ref{pr:final1} можно записать следующим образом:
-\begin{equaton}
-    
-\end{equaton}
+\begin{equation}
+    \label{pr:final2}
+    \begin{array}{c}
+    \forall j, 1 \leq j < \alpha_{e[i]}, \exists k, 1 \leq k \leq \omega_{M_{e[i]}[j]}, e[i] \neq O_{M_{e[i]}[j]}[k] : \\
+    W_{M_{e[i]}[j]}[e[i]] < W_{M_{e[i]}[j]}[O_{M_{e[i]}[j]}[k]] \\
+    \cap \\
+    \exists ! k : W_i[e[i]] = W_i[O_i[k]] \cap e[i] = O_i[k] \cap i = M_{e[i]}[\alpha_{e[i]}] \\
+    \cap \\
+    \forall j, 1 \leq j \leq \omega_i : W_i[e[i]] \geq W_i[O_i[j]] \\
+    \cap \\
+    \forall j, \alpha_{e[i]} < j \leq n : M^{-1}_{e[i]}[M_{e[i]}[\alpha_{e[i]}]] < M^{-1}_{e[i]}[M_{e[i]}[j]] \\
+    \cap \\
+    \forall j, \omega_i < j \leq n, \exists k, 1 \leq k \leq \alpha_{O_i[j]}, k \neq M_{O_i[j]}[k] : \\
+    M^{-1}_{O_i[j]}[i] > M^{-1}_{O_i[j]}[M_{O_i[j]}[k]]
+    \end{array}
+\end{equation}
 
-{
-    \ttfamily
-    hello
-    \( \forall j \)
-    worldsadfs
-    \emph{blabla}
-    \textsc{hiall}
-}
+Мы видим, что, несмотря на то, что мужчина \( e[i] \) оценивает женщин \( M_{e[i]}[j], 1 \leq j < \alpha_{e[i]} \) выше, чем
+женщину \( M_{e[i}[\alpha_{e[i]}] \), эти женщины предпочли его другим кавалерам, сделавшим им предложение. С другой стороны,
+мы видим, что всех женщин \( M_{e[i]}[j], \alpha_{e[i]} < j \leq n \) мужчина \( e[i] \) оценивает ниже, чем женщину  \( i \).
+И так как, с одной стороны, мужчина \( e[i] \) получил ответ \emph{maybe} и остановил поиск, а сдругой стороны,
+женщина \( i \) ценит мужчину \( e[i] \) выше всех тех, кто сделал ей предложение, а все те, кто не сделал, отдали предпочтение
+другим дамам, - то это значит, что пара \( (e[i],i) \) устойчива. А так как логика выбора у всех мужчин и женщин одинакова
+соответственно, то искомое утверждение будет истинно.
+\begin{displaymath}
+\begin{array}{c}
+\forall i, j, 1 \leq i < j \leq n : \\
+M^{-1}_{e[i]}[i] < M^{-1}_{e[i]}[j] \cup W_j[e[j]] > W_j[e[i]] \\
+\cap \\
+M^{-1}_{e[j]}[j] < M^{-1}_{e[j]}[i] \cup W_i[e[i]] > W_i[e[j]]
+\end{array}
+\end{displaymath}
+
+Таким образом, если написать программу в соответствии с принципами, описанными в начале доказательства, то эта программа найдёт
+\( n \) стабильных пар.
+
+\begin{verbatim}
+BEGIN
+@@@ FOR [ i = 1 .. n ] ai[i] = 0; oi[i] = 1
+
+c = 0
+FOR [ i = 1 .. n ] UNDEF O[i][oi[i]]
+\end{verbatim}
+\begin{displaymath}
+\begin{array}{c}
+c = 0 \cap \forall i, 1 \leq i \leq n : ai[i] = 0 \cap oi[i] = 1 \cap O[i][oi[i]] = \emptyset
+\end{array}
+\end{displaymath}
+\begin{verbatim}
+FOR [ i = 1 .. n ] LAUNCH man[i]; LAUNCH woman[i]
+END
+
+PROCESS man [ p = 1 .. n ]
+    r = 0
+    a[p] = no @@@ A[p][0] = no
+\end{verbatim}
+\begin{displaymath}
+\begin{array}{c}
+r = ai[p] \\
+\cap \\
+\forall i, 0 \leq i < r : A[p][i] = no \cap (A[p][r] = no \cup A[p][r] = maybe)\\
+\cap \\
+a[p] = A[p][r] \cap A[p][r + 1]] = \emptyset \\
+\cap \\
+0 \leq c \leq n \\
+\cap \\
+\forall i, 1 \leq i \leq n : O[i][oi[i]] = \emptyset\\
+\end{array}
+\end{displaymath}
+\begin{verbatim}
+    DO
+        @@@ sai = r
+        # sai = save answer index
+        IF a[p] = no
+            UNDEF a[p]  @@@ UNDEF A[p][ai[p]]
+            r = r + 1
+\end{verbatim}
+\begin{displaymath}
+r = ai[p] + 1
+\end{displaymath}
+\begin{verbatim}
+          < O[m[p][r]][oi[m[p][r]]] = p
+            @@@ soi = oi[m[p][r]]
+            # soi = save offer index
+            oi[m[p][r]] = oi[m[p][r]] + 1
+            UNDEF O[m[p][r]][oi[m[p][r]]] >
+\end{verbatim}
+\begin{displaymath}
+\begin{array}{c}
+A[p][sai] = no \cap sai + 1 = r \\
+\cap \\
+O[m[p][r]][soi] = p \\
+\cap \\
+(a[p] = \emptyset \cap r = ai[p] + 1 \cup (a[p] = maybe \cup a[p] = no) \cap r = ai[p]) \\
+\cap \\
+a[p] = A[p][r] \\
+\cup \\
+A[p][sai] = maybe \cap sai = r
+\end{array}
+\end{displaymath}
+\begin{verbatim}
+      < AWAIT c = n OR DEFINED a[p] >
+\end{verbatim}
+\begin{displaymath}
+\begin{array}{c}
+r = ai[p] \cap a[p] = A[p][r] \\
+\cap \\
+c < n \cap (a[p] = maybe \cup a[p] = no) \cup c = n \cap a[p] =  maybe
+\end{array}
+\end{displaymath}
+\begin{verbatim}
+    WHILE c < n
+\end{verbatim}
+\begin{displaymath}
+\begin{array}{c}
+r = ai[p] \\
+\cap \\
+\forall i, 0 \leq i < r : A[p][i] = no \cap A[p][r] = maybe\\
+\cap \\
+a[p] = A[p][r] \cap A[p][ai[p] + 1] = \emptyset \\
+\cap \\
+c = n \\
+\cap \\
+\forall i, 1 \leq i \leq n : O[i][oi[i]] = \emptyset\\
+\end{array}
+\end{displaymath}
+\begin{verbatim}
+
+PROSCESS woman [ q = 1 .. n ]
+    @@@ W[q][0] = -INFINITY
+    e[q] = 0
+    r = 1
+\end{verbatim}
+\begin{displaymath}
+\begin{array}{c}
+\forall i, 1 \leq i < r : W[q][O[q][i]] \leq W[q][e[q]] \\
+\cap \\
+\exists ! k, 1 \leq k < r : W[q][O[q][k]] = W[q][e[q]] \\
+\cap \\
+O[q][oi[q]] = \emptyset \\
+\cap \\
+r \leq oi[q] \\
+\cap \\
+0 \leq c \leq n
+\end{array}
+\end{displaymath}
+\begin{verbatim}
+    WHILE TRUE
+      < AWAIT c = n OR DEFINED O[q][r] >
+\end{verbatim}
+\begin{displaymath}
+\begin{array}{c}
+c = n \cap r = oi[q] \\
+\cup \\
+(c < n \cap O[q][r] \neq \emptyset \\
+\cap \\
+\forall i, 1 \leq i \leq r : W[q][O[q][i]] \leq W[q][e[q]] \cup W[q][O[q][i]] > W[q][e[q]])
+\end{array}
+\end{displaymath}
+\begin{verbatim}
+        IF c = n
+            RETURN
+        IF W[q][O[q][r]] > W[q][e[q]]
+\end{verbatim}
+\begin{displaymath}
+\begin{array}{c}
+a[O[q][r]] = \emptyset
+\end{array}
+\end{displaymath}
+\begin{verbatim}
+            IF e[q] = 0
+              < c = c + 1 >
+            a[O[q][r]] = maybe
+            @@@ ai[O[q][r]] = ai[O[q][r]] + 1
+            @@@ A[O[q][r]][ai[O[q][r]]] = maybe
+            @@@ UNDEF A[O[q][r]][ai[O[q][r]] + 1]
+\end{verbatim}
+\begin{displaymath}
+\begin{array}{c}
+a[e[q]] = maybe
+\end{array}
+\end{displaymath}
+\begin{verbatim}
+            a[e[q]] = no
+            @@@ A[e[q]][ai[e[q]]] = no
+            e[q] = O[q][r]
+        ELSE
+\end{verbatim}
+\begin{displaymath}
+\begin{array}{c}
+a[O[q][r]] = \emptyset
+\end{array}
+\end{displaymath}
+\begin{verbatim}
+            a[O[q][r]] = no
+            @@@ ai[O[q][r]] = ai[O[q][r]] + 1
+            @@@ A[O[q][r]][ai[O[q][r]]] = no
+            @@@ UNDEF A[O[q][r]][ai[O[q][r]] + 1]
+        r = r + 1
+\end{verbatim}
+\begin{displaymath}
+\begin{array}{c}
+\forall i, 1 \leq i < r : W[q][O[q][i]] \leq W[q][e[q]] \\
+\cap \\
+\exists ! k, 1 \leq k < r : W[q][O[q][k]] = W[q][e[q]] \\
+\end{array}
+\end{displaymath}
+\begin{verbatim}
+
+
+\end{verbatim}
+\begin{displaymath}
+\begin{array}{c}
+\forall i, 1 \leq i < r : W[q][O[q][i]] \leq W[q][e[q]] \\
+\cap \\
+\exists ! k, 1 \leq k < r : W[q][O[q][k]] = W[q][e[q]] \\
+\cap \\
+O[q][r] = \emptyset \\
+\cap \\
+c = n \\
+\cap \\
+r = oi[q]
+\end{array}
+\end{displaymath}
+
 \end{document}
