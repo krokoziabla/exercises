@@ -142,7 +142,7 @@ M^{-1}_{e[j]}[j] < M^{-1}_{e[j]}[i] \cup W_i[e[i]] > W_i[e[j]]
 \cap \\
 \begin{array}{lll}
 (\forall p, 1 \leq p \leq n : {}& 0 \leq r_p \leq n \cap {} \\
-                            &(r_p > 0 \cap a_p \neq 0 \implies &(\exists u, 0 \leq u \leq s_{M_p[r_p]} : O_{M_p[r_p]}[u] = p) \cap {}\\
+                            &(r_p > 0 \cap a_p \neq \emptyset \implies &(\exists u, 0 \leq u \leq s_{M_p[r_p]} : O_{M_p[r_p]}[u] = p) \cap {}\\
                             &                                  &(a_p = no \implies r_p < n \cap (\exists v, 0 \leq v \leq s_{M_p[r_p]} : W_{M_p[r_p]}[O_{M_p[r_p]}[v]] > W_{M_p[r_p]}[O_{M_p[r_p]}[u]] )) \cap {} \\
                             &                                  &(a_p = maybe \implies (\forall v, 0 \leq v < s_{M_p[r_p]} : W_{M_p[r_p]}[O_{M_p[r_p]}[u]] \geq W_{M_p[r_p]}[O_{M_p[r_p]}[v]]))) \cap {}\\
                             &a_p = \emptyset \implies          &(\exists ! q, k, q = M_p[r_p], s_q < k < t_q : O_q[k] = p) \cup {}\\
@@ -165,7 +165,6 @@ END
 \end{verbatim}
 \newpage
 \begin{verbatim}
-
 PROCESS man [ p = 1 .. n ]
     r = 0
     a = no
@@ -174,10 +173,15 @@ PROCESS man [ p = 1 .. n ]
 a = no \cup a = maybe
 \end{displaymath}
 \begin{verbatim}
-    DO
+    DO @@@ psi = psi + 1
         IF a = no
             UNDEF a
             r = r + 1
+\end{verbatim}
+\begin{displaymath}
+\forall \psi_1, \psi_2, \psi_1 \neq \psi_2 : r^{\psi_1} \neq r^{\psi_2}
+\end{displaymath}
+\begin{verbatim}
           < O[M[r]][t[M[r]]] = p
             t[M[r]] = t[M[r]] + 1 >
         ELSE
