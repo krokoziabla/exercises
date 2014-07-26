@@ -48,12 +48,12 @@ W_q, 1 \leq q \leq n
 Мужчина последовательно делает предложения женщинам в порядке убывания рейтинга до тех пор, пока не получит ответ \emph{maybe} и этот ответ не
 будет окончательным, то есть:
 \begin{displaymath}
-\forall i, 1 \leq i < \alpha : A_p[i] = no \cap A_p[\alpha] = maybe
+\forall i, 1 \leq i < \alpha : A_p[i] = no \land A_p[\alpha] = maybe
 \end{displaymath}
 
 Женщина \( q \) всегда выбирает лучшее предложение, поступившее ей:
 \begin{displaymath}
-\forall i, 1 \leq i \leq \omega : W_q[e[q]] \geq W_q[O_q[i]] \cap \exists ! k : W_q[e[q]] = W[O_q[k]]
+\forall i, 1 \leq i \leq \omega : W_q[e[q]] \geq W_q[O_q[i]] \land \exists ! k : W_q[e[q]] = W[O_q[k]]
 \end{displaymath}
 Единственность совпадения оценок \( e[q] \) и \( O_q[k] \) следует из того, что ни один мужчина не делает предложение одной и той же женщине
 дважды.
@@ -65,11 +65,11 @@ W_q, 1 \leq q \leq n
     \label{pr:final1}
     \begin{array}{c}
     \forall j, 1 \leq j < \alpha_{e[i]} : A_{e[i]}[j] = no \\
-    \cap \\
+    \land \\
     A_{e[i]}[\alpha_{e[i]}] = maybe \\
-    \cap \\
+    \land \\
     \forall j, 1 \leq j \leq \omega_i : W_i[e[i]] \geq W_i[O_i[j]] \\
-    \cap \\
+    \land \\
     \exists ! k : W_i[e[i]] = W_i[O_i[k]]
     \end{array}
 \end{equation}
@@ -86,7 +86,7 @@ W_q, 1 \leq q \leq n
 \begin{array}{c}
 \forall p, 1 \leq p \leq n : A_p[i] = maybe \\
 \Leftrightarrow \\
-\exists ! k, W_{M_p[i]}[p] = W_{M_p[i]}[O_{M_p[i]}[k]] \cap p = O_{M_p[i]}[k]
+\exists ! k, W_{M_p[i]}[p] = W_{M_p[i]}[O_{M_p[i]}[k]] \land p = O_{M_p[i]}[k]
 \end{array}
 \end{displaymath}
 Тогда \ref{pr:final1} можно записать следующим образом:
@@ -95,13 +95,13 @@ W_q, 1 \leq q \leq n
     \begin{array}{c}
     \forall j, 1 \leq j < \alpha_{e[i]}, \exists k, 1 \leq k \leq \omega_{M_{e[i]}[j]}, e[i] \neq O_{M_{e[i]}[j]}[k] : \\
     W_{M_{e[i]}[j]}[e[i]] < W_{M_{e[i]}[j]}[O_{M_{e[i]}[j]}[k]] \\
-    \cap \\
-    \exists ! k : W_i[e[i]] = W_i[O_i[k]] \cap e[i] = O_i[k] \cap i = M_{e[i]}[\alpha_{e[i]}] \\
-    \cap \\
+    \land \\
+    \exists ! k : W_i[e[i]] = W_i[O_i[k]] \land e[i] = O_i[k] \land i = M_{e[i]}[\alpha_{e[i]}] \\
+    \land \\
     \forall j, 1 \leq j \leq \omega_i : W_i[e[i]] \geq W_i[O_i[j]] \\
-    \cap \\
+    \land \\
     \forall j, \alpha_{e[i]} < j \leq n : M^{-1}_{e[i]}[M_{e[i]}[\alpha_{e[i]}]] < M^{-1}_{e[i]}[M_{e[i]}[j]] \\
-    \cap \\
+    \land \\
     \forall j, \omega_i < j \leq n, \exists k, 1 \leq k \leq \alpha_{O_i[j]}, k \neq M_{O_i[j]}[k] : \\
     M^{-1}_{O_i[j]}[i] > M^{-1}_{O_i[j]}[M_{O_i[j]}[k]]
     \end{array}
@@ -117,9 +117,9 @@ W_q, 1 \leq q \leq n
 \begin{displaymath}
 \begin{array}{c}
 \forall i, j, 1 \leq i < j \leq n : \\
-M^{-1}_{e[i]}[i] < M^{-1}_{e[i]}[j] \cup W_j[e[j]] > W_j[e[i]] \\
-\cap \\
-M^{-1}_{e[j]}[j] < M^{-1}_{e[j]}[i] \cup W_i[e[i]] > W_i[e[j]]
+M^{-1}_{e[i]}[i] < M^{-1}_{e[i]}[j] \lor W_j[e[j]] > W_j[e[i]] \\
+\land \\
+M^{-1}_{e[j]}[j] < M^{-1}_{e[j]}[i] \lor W_i[e[i]] > W_i[e[j]]
 \end{array}
 \end{displaymath}
 
@@ -132,26 +132,28 @@ M^{-1}_{e[j]}[j] < M^{-1}_{e[j]}[i] \cup W_i[e[i]] > W_i[e[j]]
 
 \begin{displaymath}
 \begin{matrix}
-(\forall p,i,j, 1 \leq p \leq n, 1 \leq i < j \leq n : M_p[i] \neq M_p[j] \cap 1 \leq M_p[i] \leq n) \\
-\cap {}\\
-(\forall q,i,j, 1 \leq q \leq n, 1 \leq i < j \leq n : W_q[i] \neq W_q[j] \cap 1 \leq W_q[i] \leq n) \\
-\cap {}\\
+(\forall p,i,j, 1 \leq p \leq n, 1 \leq i < j \leq n : M_p[i] \neq M_p[j] \land 1 \leq M_p[i] \leq n) \\
+\land {}\\
+(\forall q,i,j, 1 \leq q \leq n, 1 \leq i < j \leq n : W_q[i] \neq W_q[j] \land 1 \leq W_q[i] \leq n) \\
+\land {}\\
 0 \leq c \leq n \\
-\cap \\
-(\forall q, 1 \leq q \leq n : O_q[t_q] = \emptyset \cap (\forall i, 0 \leq i < t_q : 1 \leq O_q[i] \leq n) \cap (\forall u,v, 0 \leq u < v < t_q : O_q[u] \neq O_q[v])) \\
-\cap \\
+\land \\
+(\forall q, 1 \leq q \leq n : O_q[t_q] = \emptyset \land (\forall i, 0 \leq i < t_q : 1 \leq O_q[i] \leq n) \land (\forall u,v, 0 \leq u < v < t_q : O_q[u] \neq O_q[v])) \\
+\land \\
 \begin{array}{lll}
-(\forall p, 1 \leq p \leq n : {}& 0 \leq r_p \leq n \cap {} \\
-                            &(r_p > 0 \cap a_p \neq \emptyset \implies &(\exists u, 0 \leq u \leq s_{M_p[r_p]} : O_{M_p[r_p]}[u] = p) \cap {}\\
-                            &                                  &(a_p = no \implies r_p < n \cap (\exists v, 0 \leq v \leq s_{M_p[r_p]} : W_{M_p[r_p]}[O_{M_p[r_p]}[v]] > W_{M_p[r_p]}[O_{M_p[r_p]}[u]] )) \cap {} \\
-                            &                                  &(a_p = maybe \implies (\forall v, 0 \leq v < s_{M_p[r_p]} : W_{M_p[r_p]}[O_{M_p[r_p]}[u]] \geq W_{M_p[r_p]}[O_{M_p[r_p]}[v]]))) \cap {}\\
-                            &a_p = \emptyset \implies          &(\exists ! q, k, q = M_p[r_p], s_q < k < t_q : O_q[k] = p) \cup {}\\
-                            &                                  &(\forall u, O_u[s_u] = p, \exists ! v : \sigma_v = false))
+(\forall p, 1 \leq p \leq n : {}& 0 \leq r_p \leq n \land {} \\
+                            &(r_p > 0 \land a_p \neq \emptyset \implies &(\exists u, 0 \leq u \leq s_{M_p[r_p]} : O_{M_p[r_p]}[u] = p) \land {}\\
+                            &                                  &(a_p = no \implies r_p < n \land (\exists v, 0 \leq v \leq s_{M_p[r_p]} : W_{M_p[r_p]}[O_{M_p[r_p]}[v]] > W_{M_p[r_p]}[O_{M_p[r_p]}[u]] )) \land {} \\
+                            &                                  &(a_p = maybe \implies (\forall v, 0 \leq v < s_{M_p[r_p]} : W_{M_p[r_p]}[O_{M_p[r_p]}[u]] \geq W_{M_p[r_p]}[O_{M_p[r_p]}[v]])))
 \end{array}\\
-\cap \\
-\forall p_1,p_2, 1 \leq p_1 < p_2 \leq n : a_{p_1} = maybe \cap a_{p_2} = maybe \implies M_{p_1}[r_{p_1}] \neq M_{p_2}[r_{p_2}] \\
-\cap \\
-c = n \implies (\forall p, 1 \leq p \leq n : a_p = \emptyset \cap (\forall q, 1 \leq q \leq n : e_q \neq 0 \cap s_q = t_q \neq 0 \cap M_p[r_p] = q \cap e_q = p)
+\land \\
+\forall p_1,p_2, 1 \leq p_1 < p_2 \leq n : a_{p_1} = maybe \land a_{p_2} = maybe \implies M_{p_1}[r_{p_1}] \neq M_{p_2}[r_{p_2}] \\
+\land \\
+\begin{array}{ll}
+\forall q_1,q_2, 1 \leq q_1 < q_2 \leq n : {} & e_{q_1} \neq 0 \land e_{q_2} \neq 0 \implies e_{q_1} \neq e_{q_2} \land {}\\
+                                              & (\forall i,j, s_{q_1} < i < t_{q_1}, s_{q_2} < j < t_{q_2} : O_{q_1}[i] \neq O_{q_2}[j]) \land {} \\
+                                              & O_{q_1}[s_{q_2}] = O_{q_2}[s_{q_2}] \implies (\sigma_{q_1} = true \lor \sigma_{q_2} = true)
+\end{array} \\
 \end{matrix}
 \end{displaymath}
 
@@ -161,8 +163,10 @@ FOR [ i = 1 .. n ] t[i] = 0
 c = 0
 FOR [ i = 1 .. n ] LAUNCH man[i]; LAUNCH woman[i]
 END
-
 \end{verbatim}
+\begin{displaymath}
+c = n \land (\forall p, 1 \leq p \leq n : a_p = \emptyset) \land (\forall q, 1 \leq q \leq n : e_q \neq 0 \land s_q = t_q \neq 0 \land M_p[r_p] = q \iff e_q = p) 
+\end{displaymath}
 \newpage
 \begin{verbatim}
 PROCESS man [ p = 1 .. n ]
@@ -170,7 +174,7 @@ PROCESS man [ p = 1 .. n ]
     a = no
 \end{verbatim}
 \begin{displaymath}
-a = no \cup a = maybe
+a = no \lor a = maybe
 \end{displaymath}
 \begin{verbatim}
     DO @@@ psi = psi + 1
@@ -179,25 +183,34 @@ a = no \cup a = maybe
             r = r + 1
 \end{verbatim}
 \begin{displaymath}
-\forall \psi_1, \psi_2, \psi_1 \neq \psi_2 : r^{\psi_1} \neq r^{\psi_2}
+\begin{matrix}
+\forall \psi_1, \psi_2, \psi_1 \neq \psi_2 : r^{\psi_1} \neq r^{\psi_2} \\
+\land \\
+\forall q, 1 \leq q \leq n : O_q[s_q] = p \implies \sigma_q = true
+\end{matrix}
 \end{displaymath}
 \begin{verbatim}
           < O[M[r]][t[M[r]]] = p
             t[M[r]] = t[M[r]] + 1 >
+\end{verbatim}
+\begin{displaymath}
+    a = \emptyset \implies (\forall i \neq M[r], 1 \leq i \leq n, O_i[s_i] = p : \sigma_v = true) \land ((\exists ! q, k, q = M[r], s_q < k < t_q : O_q[k] = p) \lor (O_{M[r]}[s_{M[r]}] = p \land \sigma_{M[r]} = false) )
+\end{displaymath}
+\begin{verbatim}
         ELSE
             UNDEF a
 \end{verbatim}
 \begin{displaymath}
-a = \emptyset \cup a = maybe \cup a = no
+a = \emptyset \lor a = maybe \lor a = no
 \end{displaymath}
 \begin{verbatim}
-      < AWAIT c = n OR DEFINED a[p] >
+      < AWAIT c = n OR DEFINED a >
 \end{verbatim}
 \begin{displaymath}
-c = n \cup a = maybe \cup a = no
+c = n \lor a = maybe \lor a = no
 \end{displaymath}
 \begin{verbatim}
-    WHILE c < n
+    WHILE DEFINED a
 \end{verbatim}
 \begin{displaymath}
 c = n
@@ -215,8 +228,10 @@ PROSCESS woman [ q = 1 .. n ]
 \end{verbatim}
 \begin{displaymath}
 \begin{matrix}
-e \neq 0 \implies a_e = maybe \cap c > 0 \\
-\cap \\
+\exists k, 0 \leq k < s_q : O[k] = e \\
+\land \\
+e \neq 0 \implies a_e = maybe \land c > 0 \\
+\land \\
 (\forall i, s \leq i < t : a_{O[i]} = \emptyset)
 \end{matrix}
 \end{displaymath}
