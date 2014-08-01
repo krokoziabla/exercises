@@ -5,13 +5,41 @@
 \begin{document}
 
 \begin{algorithmic}
-    \If {$i\geq maxval$}
-        \State $i\gets 0$
-    \Else
-        \If {$i+k\leq maxval$}
-            \State $i\gets i+k$
-        \EndIf
-    \EndIf
+    \State $ enter1 \gets false $
+    \State $ enter2 \gets false $
+    \State $ turn = 2$
+    \Procedure{process1}{}
+        \State $ enter1 \gets true $
+        \While{$ enter2 = true $}
+            \If{$ turn = 2 $}
+                 \State $ enter1 \gets false $
+                 \While{$ turn = 2 $}
+                     \State skip
+                 \EndWhile
+                 \State $ enter1 \gets true $
+            \EndIf
+        \EndWhile
+        \State \texttt{critical zone}
+        \State $ enter1 = false $
+        \State $ turn = 2 $
+        \State \texttt{non-critical zone}
+    \EndProcedure
+    \Procedure{process2}{}
+        \State $ enter2 \gets true $
+        \While{$ enter1 = true $}
+            \If{$ turn = 1 $}
+                 \State $ enter2 \gets false $
+                 \While{$ turn = 1 $}
+                     \State skip
+                 \EndWhile
+                 \State $ enter2 \gets true $
+            \EndIf
+        \EndWhile
+        \State \texttt{critical zone}
+        \State $ enter2 = false $
+        \State $ turn = 1 $
+        \State \texttt{non-critical zone}
+    \EndProcedure
 \end{algorithmic}
 
 \end{document}
