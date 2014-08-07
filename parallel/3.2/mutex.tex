@@ -1,0 +1,30 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{algpseudocode}
+
+\begin{document}
+
+\begin{displaymath}
+    s \leq 1
+\end{displaymath}
+\begin{algorithmic}
+    \State $ s = 1 $
+    \State \Comment{s = 1}
+    \Procedure{process}{p = 1 .. n}
+        \While{$ true $}
+            \While{$ true $}
+                \State $ DEC(s, sign) $
+                \If{$ sign = 0 $}
+                    \State \textbf{break}
+                \EndIf
+                \State $ INC(s, sign) $
+            \EndWhile
+            \State \texttt{critical section}
+            \State $ INC(s, sign) $
+            \State \texttt{non-critical section}
+        \EndWhile
+    \EndProcedure
+\end{algorithmic}
+
+\end{document}

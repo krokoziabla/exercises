@@ -1,44 +1,36 @@
 \documentclass{article}
 
+\usepackage{amsmath}
 \usepackage{algpseudocode}
 
 \begin{document}
+
+\begin{displaymath}
+    w1 = true \implies enter1 = true \land w2 = true \implies enter2 = true
+\end{displaymath}
 
 \begin{algorithmic}
     \State $ enter1 \gets false $
     \State $ enter2 \gets false $
     \State $ turn = 2$
+    \State \Comment{$enter1 = false \land enter2 = false \land turn = 2$}
     \Procedure{process1}{}
-        \State $ enter1 \gets true $
-        \While{$ enter2 = true $}
-            \If{$ turn = 2 $}
-                 \State $ enter1 \gets false $
-                 \While{$ turn = 2 $}
-                     \State skip
-                 \EndWhile
-                 \State $ enter1 \gets true $
-            \EndIf
+        \While{$ true $} \Comment{$ enter1 = false $}
+            \State $ enter1 \gets true $ \Comment{$ enter1 = true $}
+            \While{$ enter2 = true $} \Comment{$ enter1 = true $}
+                \If{$ turn = 2 $} \Comment{$ enter1 = true $}
+                    \State $ enter1 \gets false $ \Comment{$ enter1 = false $}
+                    \While{$ turn = 2 $}
+                        \State skip
+                    \EndWhile \Comment{$ enter1 = false \land turn = 1 $}
+                    \State $ enter1 \gets true $ \Comment{$ enter1 = true \land turn = 1 $}
+                \EndIf \Comment{$ enter1 = true \land turn = 1 $}
+            \EndWhile \Comment{$ w1 = true \land w2 = false $}
+            \State \texttt{critical zone} \Comment{$ w1 = true \land w2 = false $}
+            \State $ enter1 = false $ \Comment{$ enter1 = false $}
+            \State $ turn = 2 $ \Comment{$ enter1 = false $}
+            \State \texttt{non-critical zone} \Comment{$ enter1 = false $}
         \EndWhile
-        \State \texttt{critical zone}
-        \State $ enter1 = false $
-        \State $ turn = 2 $
-        \State \texttt{non-critical zone}
-    \EndProcedure
-    \Procedure{process2}{}
-        \State $ enter2 \gets true $
-        \While{$ enter1 = true $}
-            \If{$ turn = 1 $}
-                 \State $ enter2 \gets false $
-                 \While{$ turn = 1 $}
-                     \State skip
-                 \EndWhile
-                 \State $ enter2 \gets true $
-            \EndIf
-        \EndWhile
-        \State \texttt{critical zone}
-        \State $ enter2 = false $
-        \State $ turn = 1 $
-        \State \texttt{non-critical zone}
     \EndProcedure
 \end{algorithmic}
 
