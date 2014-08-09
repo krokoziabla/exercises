@@ -1,0 +1,52 @@
+\documentclass{article}
+
+\usepackage[T1,T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath}
+\usepackage[a4paper,landscape]{geometry}
+\usepackage{algpseudocode}
+
+\author{Виталий Кирсанов}
+
+\begin{document}
+
+\begin{displaymath}
+\begin{array}{ll}
+last \neq done \implies & ((\forall i,j, 1 \leq i < j \leq n, after_i \neq i \lor after_i = i = done,
+after_j \neq j \lor after_j = j = done : after_i \neq after_j) \land {} \\ & (\exists k, 1 \leq k \leq n : after_k = done))
+\end{array}
+\end{displaymath}
+
+\begin{algorithmic}
+\State $ last \gets done $
+\Procedure{process}{p = 1..n}
+    \While{$ true $}
+        \State $ after \gets p $
+        \State $ SWAP(after, last) $
+        \While{$ after \neq done $}
+            \State \textbf{skip}
+        \EndWhile
+        \State \texttt{critical section}
+        \State $ done \gets p $
+        \State \texttt{noncritical section}
+    \EndWhile
+\EndProcedure
+\end{algorithmic}
+
+\begin{enumerate}
+    \item Взаимное исключение следует из того, что 1) переменная \( after \) различна среди всех процессов, участвующих
+    во входном протоколе, - поэтому в критическую секцию может войти только один поток, - и 2) переменная \( done \)
+    может быть изменена только этим самым процессом по выходе из критической секции.
+    \item Отсутствие излишних задержек следует из того, что 1) изначально \( done = last \), поэтому первый вошедший
+    поток ни разу не выполнит \textbf{skip}, 2) после завершения последнего процесса \( done \) опять будет равен \(
+    last \)
+    \item Отсутствие дедлоков следует из того, что 1) отсутствуют излишние задержки, 2) для любого процесса,
+    находящегося во внутреннем цикле \textbf{while}, найдётся другой поток, который либо тоже находится в этом цикле,
+    либо находится в критической зоне.
+    \item При слабосправедливом планировании любой процесс, ожидающий входа в критическую секцию, рано или поздно войдёт
+    в неё, потому что раз переменная \( done \) примет значение \( after \), она сохранит это значение до тех пор, пока
+    процесс не выйдет из критической секции.
+\end{enumerate}
+
+\end{document}
