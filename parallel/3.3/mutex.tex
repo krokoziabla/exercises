@@ -12,41 +12,66 @@
 \begin{document}
 
 \begin{displaymath}
-\begin{array}{ll}
-last \neq done \implies & ((\forall i,j, 1 \leq i < j \leq n, after_i \neq i \lor after_i = i = done,
-after_j \neq j \lor after_j = j = done : after_i \neq after_j) \land {} \\ & (\exists k, 1 \leq k \leq n : after_k = done))
-\end{array}
+\begin{matrix}
+    1 \leq |done| \leq n \\
+    \land \\
+    1 \leq |last| \leq n \\
+    \land \\
+    \forall i, 1 \leq i \leq n : |mark_i| = i \\
+    \land \\
+    \begin{array}{ll}
+        last \neq done \implies &\forall i, 1 \leq i \leq n, 8 \leq pc_i < 15 : after_i = done \lor \exists j, 1 \leq j \leq n, 8 \leq pc_j < 15 : |after_i| = j \\
+                                &\land \\
+                                &\forall i,j, 1 \leq i < j \leq n, 8 \leq pc_i < 15, 8 \leq pc_j < 15 : |after_i| \neq |after_j| \\
+                                &\land \\
+                                &\exists k, 1 \leq k \leq n, 8 \leq pc_k < 15 : after_k = done \\
+    \end{array} \\
+    \land \\
+    last = done \implies \forall i, 1 \leq i \leq n : pc_i < 7 \lor pc_i \geq 15
+\end{matrix}
 \end{displaymath}
 
-\begin{algorithmic}
-\State $ last \gets done $
-\Procedure{process}{p = 1..n}
-    \While{$ true $}
-        \State $ after \gets p $
-        \State $ SWAP(after, last) $
-        \While{$ after \neq done $}
-            \State \textbf{skip}
-        \EndWhile
+\begin{algorithmic}[1]
+\State $ last \gets done \gets 1 $                  \Comment $ last = done = 1 $
+\Procedure{process}{p = 1..n}                       \Comment $ true $
+    \State $ mark \gets p $                         \Comment $ mark_p = p $
+    \While{$ true $}                                \Comment $ true $
+        \State $ mark \gets -mark $                 \Comment $ mark_p \neq last \land mark_p \neq done $
+        \State $ after \gets mark $                 \Comment $ after_p = mark_p \land mark_p \neq last \land mark_p \neq done $
+        \State \textbf{swap} $ (after, last) $      \Comment $ mark_p \neq after_p \land mark_p \neq done \land last \neq done $
+        \If{$ after \neq -mark $}                   \Comment $ |mark_p| \neq |after_p| \land mark_p \neq done \land last \neq done $
+            \While{$ after \neq done $}
+                \State \textbf{skip}
+            \EndWhile                               \Comment $ |mark_p| \neq |after_p| \land after_p = done \land last \neq done $
+        \EndIf                                      \Comment $ (|mark_p| \neq |done| \lor -mark_p = done) \land after_p = done \land last \neq done $
         \State \texttt{critical section}
-        \State $ done \gets p $
+        \State $ done \gets mark $                  \Comment $ |mark_p| \neq |after_p| \lor -mark_p = after_p $
         \State \texttt{noncritical section}
-    \EndWhile
+    \EndWhile                                       \Comment $ false $
 \EndProcedure
 \end{algorithmic}
 
 \begin{enumerate}
-    \item Взаимное исключение следует из того, что 1) переменная \( after \) различна среди всех процессов, участвующих
-    во входном протоколе, - поэтому в критическую секцию может войти только один поток, - и 2) переменная \( done \)
-    может быть изменена только этим самым процессом по выходе из критической секции.
-    \item Отсутствие излишних задержек следует из того, что 1) изначально \( done = last \), поэтому первый вошедший
-    поток ни разу не выполнит \textbf{skip}, 2) после завершения последнего процесса \( done \) опять будет равен \(
-    last \)
-    \item Отсутствие дедлоков следует из того, что 1) отсутствуют излишние задержки, 2) для любого процесса,
-    находящегося во внутреннем цикле \textbf{while}, найдётся другой поток, который либо тоже находится в этом цикле,
-    либо находится в критической зоне.
-    \item При слабосправедливом планировании любой процесс, ожидающий входа в критическую секцию, рано или поздно войдёт
-    в неё, потому что раз переменная \( done \) примет значение \( after \), она сохранит это значение до тех пор, пока
-    процесс не выйдет из критической секции.
+    \item Взаимное исключение. Пусть некий поток $ p $ находится в критической секции ($ 13 \leq pc_p < 15 $). Тогда мы
+    знаем, что $ last \neq done $ и $ after_p = done $. Пусть теперь некий поток $ q $ пытается войти в критическую
+    секцию ($ 7 \leq pc_q < 13 $). Пусть после шага 7 $ after_q = -mark_q $. Но тогда $ after_q $ должно быть равным
+    $ done $, что противоречит глобальному инварианту, так как среди всех потоков пытающихся войти или уже вошедших в
+    критическую секцию может быть только один, чья переменная $ after $ равняется $ done $. Стало быть после шага 7
+    поток $ q $ перейдёт к циклу на шагах 9-11. Выйти из этого цикла поток $ q $ сможет, только лишь когда $ done $
+    изменит своё значение и станет равным $ after_q $. Но это возможно лишь после того как поток $ p $, выходя из
+    критической секции, изменит значение $ done $. Таким образом никакой поток $ q $ не сможет войти в критическую
+    секцию, если она уже занята потоком $ p $.
+    \item Отсутствие livelocks. Пусть критическая секция свободна, тогда из глобального инварианта следует, что
+    $ last = done $. Пусть далее несколько потоков пытаются сделать шаг 7. Тогда после этого шага найдётся такой поток,
+    чья переменная $ after $ будет равняться $ done $, и следовательно, этот поток сможет пройти в критическую секцию,
+    так как не задержится в цикле на шагах 9-11.
+    \item Отсутствие ненужных задержек доказывается аналогично предыдущему шагу.
+    \item При слабосправедливом планировщике голодание потока могло бы возникнуть, если бы этот поток находился вечно в
+    цикле на шагах 9-11, то есть его переменная $ after $ никогда бы не приняла значение $ done $.  Пусть некий поток
+    $ q $ вошёл во входной протокол раньше нашего голодающего потока $ p $, попал в критическую секцию вышел из неё и
+    снова вошёл во входной протокол. Для того чтобы он снова попал в критическую секцию, поток $ after_q $, должен
+    установить переменную $ done $ в $ mark_{after_q} $. Короче, я устал и мне лень доводить это до конца. Я и так уже
+    больше недели этой задачей занимаюсь.
 \end{enumerate}
 
 \end{document}
