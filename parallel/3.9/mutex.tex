@@ -1,0 +1,64 @@
+\documentclass{article}
+
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage[russian]{babel}
+\usepackage[a3paper,landscape]{geometry}
+\usepackage[utf8]{inputenc}
+
+\begin{document}
+
+Глобальный инвариант:
+\begin{displaymath}
+\begin{matrix}
+    0 \leq in \leq n \\
+    \land \\
+    last_0 = 0 \land \forall i, 1 \leq i \leq n : 1 \leq last_i \leq n \\
+    \land \\
+    stage_0 = 0 \land \forall i, 0 \leq i \leq n : 0 \leq stage_i \leq n \land \forall j, 0 \leq j < stage_i : last_j \neq i \land stage_{last_j} = j \land 5 \leq pc_{last_j} \leq 12 \\
+    \land \\
+    \sum_{i = 1}^{in} stage_{p_i} \leq {in * (in + 1) \over 2} \\
+    \land \\
+    \forall i, 0 \leq i \leq in, \exists j, 0 \leq j \leq in - i + 1 : \forall k, 0 \leq k \leq j : stage_{p_k} = i \land \forall l, 0 \leq in - j + 1 : stage_{p_l} \neq i
+\end{matrix}
+\end{displaymath}
+
+\begin{algorithmic}[1]
+\State $ in \gets 0 $
+\State $ last[0:n] $                                                                            \Comment $ in = 0 $
+\Procedure{process}{p = 1..n}                                                                   \Comment $ in < n $
+    \While{$ true $}
+        \State $ \langle in \gets in + 1 \rangle $                                              \Comment $ in > 0 $
+        \State $ stage \gets 0 $                                                                \Comment $ last[stage_p] \neq p \land stage_p < in \land in > 0 $
+        \While{$ last[stage] \neq p $}
+            \State $ stage \gets stage + 1 $                                                    \Comment $ (stage_p < in \implies last[stage_p] \neq p) \land stage_p > 0 \land in > 0 $
+            \State $ last[stage] \gets p $                                                      \Comment $ (last[stage_p] \neq p \implies stage_p < in \land stage_{last[stage_p]} = stage_p) \land stage_p > 0 \land in > 0 $
+            \State $ \langle \textbf{await}\ last[stage] \neq p \lor in \leq stage \rangle $
+        \EndWhile
+        \State \texttt{critical section}
+        \State $ \langle in \gets in - 1 \rangle $                                              \Comment $ stage_p > 0 \land in < n $
+        \State \texttt{noncritical section}
+    \EndWhile
+\EndProcedure
+\end{algorithmic}
+
+\begin{enumerate}
+\item Взаимное исключение. Пусть поток $ p $ находится в критической секции ($ 12 \leq pc_p < 13 $). Тогда состояние программы
+      описывается предикатом $ (last[stage_p] \neq p \implies stage_p < in \land stage_{last[stage_p]} = stage_p) \land stage_p >
+      0 \land in > 0 $. Рассмотрим три возможные варианта взаимоотношений переменных $ last[stage_p] $, $ stage_p $, $ p $ и
+      $ in $.
+      \begin{enumerate}
+      \item $ last[stage_p] = p \land stage_p = in $ Согласно глобальному инварианту, найдутся $ in - 1 $ потоков, чьи переменные
+            $ stage $ будут больше нуля и строго меньше $ in $ ($\forall i, 1 \leq i < in : 1 \leq stage_{p_i} < in $). При этом,
+            для всех таких потоков программный счётчик будет равен 10 ($ \forall i, 1 \leq i < in : pc_{p_i} = 10 $) и будет
+            верно: $ \forall i, 1 \leq i < in : last[stage_{p_i}] = p_i \land stage_{p_i} < p $.  Следовательно, все такие потоки
+            будут ожидать на операторе \textbf{await} и не смогут войти в критическую секцию, пока поток $ p $ находится в ней.
+      \item $ last[stage_p] = p \land stage_p < in $ В этом случае вне некритической секции будут находиться $ in $ потоков, но
+            глобальный инвариант говорит нам теперь лишь о том, что только для $ stage_p - 1 $ из них переменная $ stage $ будет
+            строго меньше $ in $ ($ \forall i, 1 \leq i < stage_p : 1 \leq stage_{p_i} < in $). Покажем, что для оставшихся $ in -
+            stage_p $ процессов переменная $ stage $ будет так же строго меньше $ in $. Пусть найдётся поток $ q $, чья переменная
+            $ stage $ будет равна $ in $.
+      \item $ last[stage_p] \neq p \land stage_p < in $
+      \end{enumerate}
+\end{enumerate}
+\end{document}
