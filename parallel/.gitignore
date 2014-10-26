@@ -3,4 +3,5 @@
 *.aux
 *.pdf
 core.*
+*.core
 a.out
